@@ -1,0 +1,31 @@
+# --- Python / Django (backend) ---
+__pycache__/
+*.py[cod]
+*.sqlite3
+db.sqlite3
+.env
+venv/
+env/
+.venv/
+*.egg-info/
+.fastf1_cache/
+staticfiles/
+
+# --- Node / React (frontend) ---
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+npm-debug.log*
+
+# --- Jupyter / ML ---
+.ipynb_checkpoints/
+*.pyc
+ml/data/
+
+# --- OS / Editor ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
