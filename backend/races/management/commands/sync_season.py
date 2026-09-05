@@ -39,7 +39,7 @@ class Command(BaseCommand):
         failed = []
 
         for _, event in schedule.iterrows():
-            round_number = event['RoundNumber']
+            round_number = int(event['RoundNumber'])
             race_name = event['EventName']
 
             for session_type in session_types:
@@ -49,7 +49,7 @@ class Command(BaseCommand):
                     call_command(
                         'sync_race_data',
                         year=year,
-                        race=str(round_number),
+                        race=round_number,
                         session=session_type,
                     )
                     succeeded.append(label)

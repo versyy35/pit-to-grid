@@ -4,8 +4,14 @@ the local database using update-or-create logic, so re-running this command
 for the same session never duplicates data.
 
 Usage:
-    python manage.py sync_race_data --year 2023 --race "Monaco" --session R
+    python manage.py sync_race_data --year 2023 --race 6 --session R
     python manage.py sync_race_data --year 2023 --race "Monaco" --session Q
+
+Note: --race accepts either a round number (int, e.g. 6) or a race name
+(str, e.g. "Monaco"). Round numbers are strongly preferred for automation
+since FastF1 does fuzzy name-matching on strings, which can silently
+resolve to the wrong race. This also handles being called programmatically
+via call_command() with race passed as an actual int (not a CLI string).
 """
 
 import fastf1
@@ -18,8 +24,6 @@ from races.models import (
     Race, Session, Lap, PitStop, Result,
 )
 
-# FastF1 caches raw downloads locally so repeat runs are fast. Point this
-# somewhere persistent on disk (not committed to git).
 fastf1.Cache.enable_cache('.fastf1_cache')
 
 
@@ -28,16 +32,24 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--year', type=int, required=True)
-        parser.add_argument('--race', type=str, required=True, help='Race name or round number, e.g. "Monaco"')
+        parser.add_argument('--race', type=str, required=True,
+                             help='Round number (e.g. 6) or race name (e.g. "Monaco")')
         parser.add_argument('--session', type=str, required=True, choices=['R', 'Q'])
 
     def handle(self, *args, **options):
         year = options['year']
-        race_name = options['race']
+        race_input = options['race']
         session_type = options['session']
 
-        self.stdout.write(f'Fetching {year} {race_name} ({session_type}) from FastF1...')
-        ff1_session = fastf1.get_session(year, race_name, session_type)
+        if isinstance(race_input, int):
+            race_arg = race_input
+        elif isinstance(race_input, str) and race_input.isdigit():
+            race_arg = int(race_input)
+        else:
+            race_arg = race_input
+
+        self.stdout.write(f'Fetching {year} {race_input} ({session_type}) from FastF1...')
+        ff1_session = fastf1.get_session(year, race_arg, session_type)
         ff1_session.load()
 
         with transaction.atomic():
@@ -50,7 +62,7 @@ class Command(BaseCommand):
             self._sync_results(session_obj, ff1_session, driver_map, session_type)
 
         self.stdout.write(self.style.SUCCESS(
-            f'Synced {year} {race_name} ({session_type}) successfully.'
+            f'Synced {year} {race_obj.name} ({session_type}) successfully.'
         ))
 
     # ---- helpers -----------------------------------------------------
@@ -153,7 +165,7 @@ class Command(BaseCommand):
 
                 duration = (out_lap['PitOutTime'] - in_lap['PitInTime']).total_seconds()
                 if duration <= 0:
-                    continue  # guard against any remaining bad pairings
+                    continue
 
                 PitStop.objects.update_or_create(
                     session=session_obj,
