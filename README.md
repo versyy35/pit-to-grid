@@ -41,6 +41,11 @@ ml/ Notebooks, training scripts, trained models
 | `fix` | `DataNotLoadedError` on partial weather data loads |
 | `fix` | Driver mid-season team-swap DB constraint bug, slowed sync to respect rate limit |
 | `add` | DRF API: serializers, views, and URLs for races/laps/pitstops/results |
+| `add` | Initialize README with project details and setup instructions |
+| `security` | Remove real-looking fallback SECRET_KEY, use obvious placeholder |
+| `merge` | Merge remote README with local security fix |
+| `update` | commit logs in README |
+
 
 ## Status
 
