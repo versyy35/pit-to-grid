@@ -86,7 +86,10 @@ class Command(BaseCommand):
         return race_obj
 
     def _sync_session(self, race_obj, session_type, ff1_session):
-        weather = ff1_session.weather_data
+        try:
+            weather = ff1_session.weather_data
+        except Exception:
+            weather = None
         defaults = {}
         if weather is not None and not weather.empty:
             defaults = {
