@@ -18,17 +18,22 @@ An F1 race strategy analyzer and prediction platform. Pulls historical race and 
 | Deployment | Vercel (frontend) + Railway (backend) *(planned)* |
 
 ## Architecture
+
+\`\`\`
 FastF1 → ETL (Django management commands) → Supabase (Postgres)
-│
-Django + DRF (JSON API)
-│
-React (planned)
+                                                    │
+                                          Django + DRF (JSON API)
+                                                    │
+                                              React (planned)
+\`\`\`
 
 ## Repo structure
-backend/ Django + DRF API, ETL scripts, models
-frontend/ React app (planned)
-ml/ Notebooks, training scripts, trained models
 
+\`\`\`
+backend/     Django + DRF API, ETL scripts, models
+frontend/    React app (planned)
+ml/          Notebooks, training scripts, trained models
+\`\`\`
 ---
 
 ## Progress Log
@@ -45,6 +50,7 @@ ml/ Notebooks, training scripts, trained models
 | `security` | Remove real-looking fallback SECRET_KEY, use obvious placeholder |
 | `merge` | Merge remote README with local security fix |
 | `update` | commit logs in README |
+| `update` | formattings in README |
 
 
 ## Status
@@ -83,7 +89,10 @@ python manage.py sync_season --year 2023
 Both commands are safe to re-run — they update existing rows rather than duplicating them.
 
 ## API endpoints
+
+\`\`\`
 GET /api/races/?season=2023
 GET /api/races/<race_id>/laps/?session=R
 GET /api/races/<race_id>/pitstops/?session=R
 GET /api/races/<race_id>/results/?session=Q
+\`\`\`
