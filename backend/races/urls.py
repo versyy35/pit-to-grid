@@ -1,0 +1,9 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('races/', views.RaceListView.as_view(), name='race-list'),
+    path('races/<int:race_id>/laps/', views.RaceLapsView.as_view(), name='race-laps'),
+    path('races/<int:race_id>/pitstops/', views.RacePitStopsView.as_view(), name='race-pitstops'),
+    path('races/<int:race_id>/results/', views.RaceResultsView.as_view(), name='race-results'),
+]
