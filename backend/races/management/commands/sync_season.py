@@ -57,7 +57,7 @@ class Command(BaseCommand):
                     self.stderr.write(self.style.ERROR(f'FAILED {label}: {e}'))
                     failed.append(label)
 
-                time.sleep(1)  # be polite to FastF1's underlying data source
+                time.sleep(90)  # stay under FastF1's ~500 calls/hour rate limit
 
         self.stdout.write(self.style.SUCCESS(
             f'\nSeason {year} sync complete: {len(succeeded)} succeeded, {len(failed)} failed.'

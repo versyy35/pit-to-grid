@@ -119,8 +119,9 @@ class Command(BaseCommand):
                 driver_number=int(row['DriverNumber']) if pd.notnull(row['DriverNumber']) else None,
                 defaults={'full_name': row['FullName']},
             )
-            DriverSeasonEntry.objects.get_or_create(
-                driver=driver_obj, season=season_obj, team=team_obj,
+            DriverSeasonEntry.objects.update_or_create(
+                driver=driver_obj, season=season_obj,
+                defaults={'team': team_obj},
             )
             driver_map[row['Abbreviation']] = driver_obj
         return driver_map
