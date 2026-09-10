@@ -60,6 +60,7 @@ class ResultSerializer(serializers.ModelSerializer):
     driver_code = serializers.CharField(source='driver.driver_code', read_only=True)
     driver_name = serializers.CharField(source='driver.full_name', read_only=True)
     team_name = serializers.CharField(source='team.name', read_only=True)
+    team_name = serializers.CharField(source='team.name', read_only=True)
 
     class Meta:
         model = Result

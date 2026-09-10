@@ -1,7 +1,9 @@
 from django.db.models import Sum
+from .circuit_mapping import get_circuit_file
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 
 from .models import Race, Session, Lap, PitStop, Result
 from .serializers import RaceSerializer, LapSerializer, PitStopSerializer, ResultSerializer
@@ -73,3 +75,38 @@ class SeasonChampionView(APIView):
         if leader is None:
             return Response({'detail': 'No results found for this season.'}, status=404)
         return Response(leader)
+
+
+class RaceSessionView(APIView):
+    """GET /api/races/<race_id>/session/?session=R (default R) -- weather/session conditions"""
+
+    def get(self, request, race_id):
+        session_type = request.query_params.get('session', 'R')
+        session_obj = _get_session_or_none(race_id, session_type)
+        if session_obj is None:
+            return Response({'detail': 'Session not found.'}, status=404)
+        return Response({
+            'session_type': session_obj.session_type,
+            'air_temp': session_obj.air_temp,
+            'track_temp': session_obj.track_temp,
+            'humidity': session_obj.humidity,
+            'rainfall': session_obj.rainfall,
+        })
+
+class RaceDetailView(APIView):
+    """GET /api/races/<race_id>/ -- single race info, including its circuit SVG slug"""
+
+    def get(self, request, race_id):
+        race = Race.objects.select_related('season').filter(id=race_id).first()
+        if race is None:
+            return Response({'detail': 'Race not found.'}, status=404)
+        return Response({
+            'id': race.id,
+            'name': race.name,
+            'circuit': race.circuit,
+            'country': race.country,
+            'season_year': race.season.year,
+            'round_number': race.round_number,
+            'event_date': race.event_date,
+            'circuit_file': get_circuit_file(race.circuit),
+        })

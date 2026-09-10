@@ -7,4 +7,6 @@ urlpatterns = [
     path('races/<int:race_id>/pitstops/', views.RacePitStopsView.as_view(), name='race-pitstops'),
     path('races/<int:race_id>/results/', views.RaceResultsView.as_view(), name='race-results'),
     path('seasons/<int:year>/champion/', views.SeasonChampionView.as_view(), name='season-champion'),
+    path('races/<int:race_id>/session/', views.RaceSessionView.as_view(), name='race-session'),
+    path('races/<int:race_id>/', views.RaceDetailView.as_view(), name='race-detail'),
 ]
