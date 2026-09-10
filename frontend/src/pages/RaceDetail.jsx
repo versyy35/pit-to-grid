@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
+import TrackMap from '../components/TrackMap'
 import './RaceDetail.css'
 
 const API_BASE = 'http://127.0.0.1:8000/api'
@@ -18,6 +19,7 @@ const COLORS = [
 function RaceDetail() {
   const { raceId } = useParams()
 
+  const [race, setRace] = useState(null)
   const [laps, setLaps] = useState([])
   const [pitStops, setPitStops] = useState([])
   const [results, setResults] = useState([])
@@ -25,18 +27,21 @@ function RaceDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedDrivers, setSelectedDrivers] = useState([])
+  const [showAllPitStops, setShowAllPitStops] = useState(false)
 
   useEffect(() => {
     setLoading(true)
     setError(null)
 
     Promise.all([
+      fetch(`${API_BASE}/races/${raceId}/`).then((r) => r.json()),
       fetch(`${API_BASE}/races/${raceId}/laps/?session=R`).then((r) => r.json()),
       fetch(`${API_BASE}/races/${raceId}/pitstops/?session=R`).then((r) => r.json()),
       fetch(`${API_BASE}/races/${raceId}/results/?session=R`).then((r) => r.json()),
       fetch(`${API_BASE}/races/${raceId}/session/?session=R`).then((r) => r.json()),
     ])
-      .then(([lapsData, pitStopsData, resultsData, sessionData]) => {
+      .then(([raceData, lapsData, pitStopsData, resultsData, sessionData]) => {
+        setRace(raceData)
         setLaps(lapsData)
         setPitStops(pitStopsData)
         setResults(resultsData)
@@ -85,20 +90,34 @@ function RaceDetail() {
   const yMin = selectedTimes.length ? Math.floor(Math.min(...selectedTimes)) - 2 : 70
   const yMax = selectedTimes.length ? Math.ceil(Math.max(...selectedTimes)) + 2 : 110
 
+  // Normal pit stops only (filter out red-flag-length stoppages), sorted fastest first.
+  const normalPitStops = pitStops
+    .filter((s) => s.duration_seconds <= 120)
+    .sort((a, b) => a.duration_seconds - b.duration_seconds)
+  const visiblePitStops = showAllPitStops ? normalPitStops : normalPitStops.slice(0, 5)
+
   return (
     <div className="page">
-      <div className="page-header">
-        <h1>Race #{raceId}</h1>
-      </div>
+      <div className="race-hero card">
+        <div className="race-hero-info">
+          <span className="race-hero-label">
+            {race.season_year} · Round {race.round_number}
+          </span>
+          <h1>{race.name}</h1>
+          <span className="race-hero-location">{race.circuit}, {race.country}</span>
 
-      {session && (
-        <div className="weather-bar">
-          <span>🌡️ Air {session.air_temp.toFixed(1)}°C</span>
-          <span>🛣️ Track {session.track_temp.toFixed(1)}°C</span>
-          <span>💧 {session.humidity.toFixed(0)}% humidity</span>
-          <span>{session.rainfall ? '🌧️ Rain' : '☀️ Dry'}</span>
+          {session && (
+            <div className="weather-bar">
+              <span>🌡️ Air {session.air_temp.toFixed(1)}°C</span>
+              <span>🛣️ Track {session.track_temp.toFixed(1)}°C</span>
+              <span>💧 {session.humidity.toFixed(0)}%</span>
+              <span>{session.rainfall ? '🌧️ Rain' : '☀️ Dry'}</span>
+            </div>
+          )}
         </div>
-      )}
+
+        <TrackMap circuitFile={race.circuit_file} />
+      </div>
 
       <div className="card">
         <h2>Compare Drivers</h2>
@@ -157,18 +176,24 @@ function RaceDetail() {
       </div>
 
       <div className="card">
-        <h2>Pit Stops</h2>
+        <div className="card-header-row">
+          <h2>Fastest Pit Stops</h2>
+        </div>
         <ul className="pit-list">
-          {pitStops.map((stop) => (
-            <li key={stop.id}>
+          {visiblePitStops.map((stop, i) => (
+            <li key={stop.id} className={i === 0 ? 'pit-fastest' : ''}>
+              <span className="pit-rank">{i + 1}</span>
               <span className="code">{stop.driver_code}</span>
-              Lap {stop.lap_number} —{' '}
-              {stop.duration_seconds > 120
-                ? `${(stop.duration_seconds / 60).toFixed(1)} min (stoppage)`
-                : `${stop.duration_seconds.toFixed(2)}s`}
+              <span className="pit-lap">Lap {stop.lap_number}</span>
+              <span className="pit-time">{stop.duration_seconds.toFixed(2)}s</span>
             </li>
           ))}
         </ul>
+        {normalPitStops.length > 5 && (
+          <button className="text-button" onClick={() => setShowAllPitStops(!showAllPitStops)}>
+            {showAllPitStops ? 'Show less' : `Show all ${normalPitStops.length} pit stops`}
+          </button>
+        )}
       </div>
 
       <div className="card">
@@ -188,7 +213,14 @@ function RaceDetail() {
             {results.map((result) => (
               <tr key={result.id}>
                 <td><span className="pos-badge">{result.finishing_position ?? '-'}</span></td>
-                <td>{result.driver_name}</td>
+                <td>
+                  <div className="driver-cell">
+                    {result.driver_photo && (
+                      <img src={result.driver_photo} alt={result.driver_name} className="driver-avatar" />
+                    )}
+                    {result.driver_name}
+                  </div>
+                </td>
                 <td>{result.team_name}</td>
                 <td>{result.grid_position ?? '-'}</td>
                 <td>{result.points}</td>

@@ -59,13 +59,13 @@ class PitStopSerializer(serializers.ModelSerializer):
 class ResultSerializer(serializers.ModelSerializer):
     driver_code = serializers.CharField(source='driver.driver_code', read_only=True)
     driver_name = serializers.CharField(source='driver.full_name', read_only=True)
-    team_name = serializers.CharField(source='team.name', read_only=True)
+    driver_photo = serializers.CharField(source='driver.photo_url', read_only=True)
     team_name = serializers.CharField(source='team.name', read_only=True)
 
     class Meta:
         model = Result
         fields = [
-            'id', 'driver_code', 'driver_name', 'team_name',
+            'id', 'driver_code', 'driver_name', 'driver_photo', 'team_name',
             'finishing_position', 'grid_position', 'points', 'status',
             'q1_seconds', 'q2_seconds', 'q3_seconds',
         ]

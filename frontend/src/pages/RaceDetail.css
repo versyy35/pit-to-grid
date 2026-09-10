@@ -4,24 +4,6 @@
   padding: 32px 24px 80px;
 }
 
-.page-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.weather-bar {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  color: var(--text-secondary);
-  font-size: 14px;
-  margin-bottom: 28px;
-}
-
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -38,6 +20,50 @@
   margin-bottom: 16px;
 }
 
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* --- Hero section --- */
+.race-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-top: 3px solid var(--accent-red);
+}
+
+.race-hero-label {
+  color: var(--accent-red);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.race-hero h1 {
+  font-size: 32px;
+  margin: 6px 0 2px 0;
+}
+
+.race-hero-location {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.weather-bar {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+/* --- Driver chips --- */
 .driver-chips {
   display: flex;
   flex-wrap: wrap;
@@ -74,29 +100,70 @@
   text-align: center;
 }
 
+/* --- Pit stops (simplified) --- */
 .pit-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 12px 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .pit-list li {
+  display: grid;
+  grid-template-columns: 24px 60px 1fr auto;
+  align-items: center;
   background: var(--bg-card-hover);
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 13px;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+.pit-list li.pit-fastest {
+  border: 1px solid var(--accent-red);
+  background: rgba(225, 6, 0, 0.08);
+}
+
+.pit-rank {
   color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 12px;
 }
 
 .pit-list .code {
   color: var(--text-primary);
   font-weight: 700;
-  margin-right: 6px;
 }
 
+.pit-lap {
+  color: var(--text-secondary);
+}
+
+.pit-time {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pit-fastest .pit-time {
+  color: var(--accent-red);
+}
+
+.text-button {
+  background: none;
+  border: none;
+  color: var(--accent-red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.text-button:hover {
+  color: var(--accent-red-hover);
+}
+
+/* --- Results table --- */
 table.results {
   width: 100%;
   border-collapse: collapse;
@@ -137,6 +204,20 @@ table.results tr:hover td {
   background: var(--bg-card-hover);
   font-weight: 700;
   font-size: 13px;
+}
+
+.driver-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.driver-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--border-subtle);
 }
 
 .loading-state, .error-state {
