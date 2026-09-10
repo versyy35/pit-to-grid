@@ -34,7 +34,8 @@ class Driver(models.Model):
     driver_code = models.CharField(max_length=10)   # e.g. 'VER', 'HAM'
     driver_number = models.PositiveIntegerField(null=True, blank=True)
     full_name = models.CharField(max_length=100)
-
+    photo_url = models.URLField(max_length=500, blank=True)
+    
     class Meta:
         unique_together = ('driver_code', 'driver_number')
 
