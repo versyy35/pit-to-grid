@@ -1,0 +1,31 @@
+.track-map {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.track-map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.track-outline {
+  fill: none;
+  stroke: #3a3c42;
+  stroke-width: 20;
+  stroke-linejoin: round;
+}
+
+.track-dot {
+  fill: var(--accent-red);
+  filter: drop-shadow(0 0 6px var(--accent-red));
+}
+
+.track-map-placeholder {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 0;
+}
