@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react'
 
+const SEASONS = [2021, 2022, 2023, 2024, 2025, 2026]
+
 function App() {
+  const [season, setSeason] = useState(2023)
   const [races, setRaces] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/races/?season=2023')
+    setLoading(true)
+    setError(null)
+
+    fetch(`http://127.0.0.1:8000/api/races/?season=${season}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status}`)
@@ -21,21 +27,37 @@ function App() {
         setError(err.message)
         setLoading(false)
       })
-  }, [])
-
-  if (loading) return <p>Loading races...</p>
-  if (error) return <p>Error: {error}</p>
+  }, [season])
 
   return (
     <div>
-      <h1>Pit to Grid — 2023 Season</h1>
-      <ul>
-        {races.map((race) => (
-          <li key={race.id}>
-            Round {race.round_number}: {race.name} — {race.circuit}
-          </li>
+      <h1>Pit to Grid</h1>
+
+      <label htmlFor="season-select">Select Season: </label>
+      <select
+        id="season-select"
+        value={season}
+        onChange={(e) => setSeason(Number(e.target.value))}
+      >
+        {SEASONS.map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
         ))}
-      </ul>
+      </select>
+
+      {loading && <p>Loading races...</p>}
+      {error && <p>Error: {error}</p>}
+
+      {!loading && !error && (
+        <ul>
+          {races.map((race) => (
+            <li key={race.id}>
+              Round {race.round_number}: {race.name} — {race.circuit}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
