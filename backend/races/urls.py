@@ -6,4 +6,5 @@ urlpatterns = [
     path('races/<int:race_id>/laps/', views.RaceLapsView.as_view(), name='race-laps'),
     path('races/<int:race_id>/pitstops/', views.RacePitStopsView.as_view(), name='race-pitstops'),
     path('races/<int:race_id>/results/', views.RaceResultsView.as_view(), name='race-results'),
+    path('seasons/<int:year>/champion/', views.SeasonChampionView.as_view(), name='season-champion'),
 ]

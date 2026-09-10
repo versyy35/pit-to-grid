@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -56,3 +57,19 @@ class RaceResultsView(APIView):
             return Response({'detail': 'Session not found.'}, status=404)
         results = Result.objects.filter(session=session_obj).select_related('driver', 'team')
         return Response(ResultSerializer(results, many=True).data)
+
+class SeasonChampionView(APIView):
+    """GET /api/seasons/<year>/champion/ -- top points scorer for that season (Race sessions only)"""
+
+    def get(self, request, year):
+        results = (
+            Result.objects
+            .filter(session__race__season__year=year, session__session_type='R')
+            .values('driver__id', 'driver__full_name', 'driver__driver_code', 'driver__photo_url')
+            .annotate(total_points=Sum('points'))
+            .order_by('-total_points')
+        )
+        leader = results.first()
+        if leader is None:
+            return Response({'detail': 'No results found for this season.'}, status=404)
+        return Response(leader)
